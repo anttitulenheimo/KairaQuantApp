@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1019" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' http://127.0.0.1:* http://localhost:*; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Kaira Quant · Execution Service</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./execution.css" />
+    <link rel="stylesheet" href="./service.css" />
+    <script type="module" src="./service-app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip" href="#workspace">Skip to execution</a>
+    <aside class="sidebar">
+      <a class="brand" href="./"
+        ><span class="brand-mark">K</span
+        ><span>KAIRA<span class="brand-sub">QUANT LAB</span></span></a
+      >
+      <div class="nav-title">WORKSPACE</div>
+      <a class="nav-link" href="./market.html">◉ Market monitor · V16</a>
+      <a class="nav-link" href="./"><span>◈</span> Monthly simulation</a>
+      <a class="nav-link selected" href="./service.html"
+        ><span>⇄</span> Python service</a
+      >
+      <a class="nav-link" href="./execution.html"><span>◇</span> Browser broker lab</a>
+      <a class="nav-link" href="#fills-section"><span>≡</span> Fill ledger</a>
+      <div class="sidebar-note">
+        <span class="live-dot"></span> SIMULATED BROKER
+        <p>From decision<br /> to fill.</p>
+        <small>V15 / no real orders</small>
+      </div>
+    </aside>
+    <main id="workspace">
+      <header class="topbar">
+        <a href="./">← Monthly simulation</a
+        ><span class="badge">SYNTHETIC EXECUTION TEST</span>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">DECISION → ORDER → FILL</p>
+          <h1>Execution that persists.</h1>
+          <p class="lead">
+            View the Python service in your browser. Decisions, fills and account balances persist on your computer after the browser closes.
+          </p>
+        </div>
+        <div class="rule">
+          <strong>V15</strong><span>execution lab</span>
+        </div>
+      </section>
+      <div id="exec-notice" role="status" aria-live="polite" hidden></div>
+      <section
+        class="panel control-panel connection-panel"
+        aria-label="Local service connection"
+      >
+        <p class="eyebrow">LOCAL PYTHON SERVICE</p>
+        <h2 id="service-state">Disconnected</h2>
+        <p class="muted">
+          Run from the project directory: <code>python3 run_v15_service.py</code>. Then connect below. The service must run on this computer; localhost on your phone does not point to your computer.
+        </p>
+        <label for="service-url">Local service address</label
+        ><input
+          id="service-url"
+          type="url"
+          value="http://127.0.0.1:8765"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div class="button-row">
+          <button id="service-connect" class="primary">
+            Connect local service</button
+          ><a
+            id="service-local"
+            href="http://127.0.0.1:8765/service.html"
+            target="_blank"
+            rel="noopener"
+            >Open local interface ↗</a
+          ><button id="service-refresh" disabled>Refresh status</button
+          ><button id="service-retry" hidden>
+            Retry the same command
+          </button>
+        </div>
+        <p id="service-help" class="muted">
+          Confirm the connection in the local window. Your browser may request local network permission. If access is blocked, use the local interface directly.
+        </p>
+      </section>
+      <section class="panel control-panel">
+        <div class="execution-config">
+          <div>
+            <label for="exec-asset">Separate portfolio</label
+            ><select id="exec-asset">
+              <option>BTC</option>
+              <option>ETH</option>
+            </select>
+          </div>
+          <div>
+            <label for="exec-cost">Round-trip cost</label
+            ><select id="exec-cost">
+              <option value="base">Base · 0.60%</option>
+              <option value="stress">Stress · 1.20%</option>
+            </select>
+          </div>
+          <div>
+            <label for="exec-scenario">Synthetic price path</label
+            ><select id="exec-scenario">
+              <option value="waves">Oscillating market</option>
+              <option value="trend">Rising market</option>
+              <option value="shock">Shock and recovery</option>
+            </select>
+          </div>
+          <div>
+            <label for="exec-profile">Broker test behavior</label
+            ><select id="exec-profile">
+              <option value="normal">Standard fills</option>
+              <option value="partial">Partial fills</option>
+              <option value="faults">Interruptions and failures</option>
+            </select>
+          </div>
+        </div>
+        <p class="muted">
+          A new run uses the selected settings and replaces the previous run in this view. Your V13 simulation is preserved.
+        </p>
+        <div class="button-row">
+          <button id="exec-start">New run</button
+          ><button id="exec-step" class="primary" disabled>
+            Next step →</button
+          ><button id="exec-year" disabled>Run on server</button
+          ><button id="exec-stop" hidden>Pause server run</button>
+        </div>
+        <p id="exec-save" class="muted">
+          Choose settings and start a new run.
+        </p>
+      </section>
+      <section
+        class="execution-progress panel"
+        aria-label="Order stage"
+      >
+        <div>
+          <p class="eyebrow">EXECUTION TEST CLOCK</p>
+          <h2 id="exec-time">No decisions yet</h2>
+        </div>
+        <div id="exec-stage" class="badge">READY TO START</div>
+        <p id="exec-reason" class="muted">
+          The decision is saved before submission to the broker.
+        </p>
+      </section>
+      <section class="metric-grid" aria-label="Portfolio from confirmed fills">
+        <article class="metric">
+          <span>Portfolio value</span><strong id="exec-equity">$10,000.00</strong
+          ><small>Confirmed fills and cash</small>
+        </article>
+        <article class="metric">
+          <span>Cash</span><strong id="exec-cash">$10,000.00</strong
+          ><small id="exec-reserved">No open order</small>
+        </article>
+        <article class="metric">
+          <span>Crypto quantity</span><strong id="exec-quantity">0</strong
+          ><small id="exec-weight">Weight 0%</small>
+        </article>
+        <article class="metric">
+          <span>Fees paid</span><strong id="exec-fees">$0.00</strong
+          ><small id="exec-reserve">Reserve calculated at period end</small>
+        </article>
+      </section>
+      <section class="panel journal execution-journal" id="orders-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">INTENT AND EXECUTION, SEPARATELY</p>
+            <h2>
+              Decisions and orders
+              <span id="exec-count" class="count">0 / 13</span>
+            </h2>
+          </div>
+          <button id="exec-export" disabled>Export service state</button>
+        </div>
+        <p class="muted">
+          Quantity is rounded down to 8 decimal places. The simulated broker has a $1 minimum order. An open order blocks the next monthly decision.
+        </p>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Decision and order ledger"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Time · UTC</th>
+                <th>Decision</th>
+                <th>Reason</th>
+                <th>Planned quantity</th>
+                <th>Filled quantity</th>
+                <th>Status</th>
+                <th>ID</th>
+              </tr>
+            </thead>
+            <tbody id="exec-orders"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel journal execution-journal" id="fills-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ONLY CONFIRMED FILLS CHANGE BALANCES</p>
+            <h2>
+              Confirmed fills
+              <span id="exec-fill-count" class="count">0</span>
+            </h2>
+          </div>
+        </div>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Confirmed fills"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Time · UTC</th>
+                <th>Side</th>
+                <th>Quantity</th>
+                <th>Price $</th>
+                <th>Fee $</th>
+                <th>Fill ID</th>
+              </tr>
+            </thead>
+            <tbody id="exec-fills"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="method">
+        <div>
+          <p class="eyebrow">ONE EXECUTION PATH, PERSISTENT STATE</p>
+          <h2>The server executes.<br /> The browser reports.</h2>
+        </div>
+        <div>
+          <p>
+            Python uses the same synthetic monthly rule and broker scenarios as V14. Decisions are persisted in SQLite before their effects. Retrying an HTTP command with the same request ID does not repeat its effects.
+          </p>
+          <p>
+            Run on server starts the test year in Python. You can close the browser. Restarting the service resumes an active run; a paused run stays paused. The failure profile deliberately pauses after a lost acknowledgement and resumes with the same order ID.
+          </p>
+          <p>
+            If the connection drops, values are marked stale and controls are disabled. The interface never replaces server balances with a browser simulation. Press Ctrl+C in the terminal to stop the service; shutting down the computer also stops it.
+          </p>
+          <p class="method-note">
+            The broker and prices are simulated. The service listens only on your computer. GitHub Pages stores no database, access token or broker credentials. V8/V10 studies and the legacy ML paper application remain separate.
+          </p>
+        </div>
+      </section>
+      <footer>
+        <span>KAIRA QUANT · V15</span
+        ><span>Monthly rule / simulated broker</span>
+      </footer>
+    </main>
+    <noscript>This execution interface requires JavaScript.</noscript>
+  </body>
+</html>

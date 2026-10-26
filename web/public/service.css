@@ -1,0 +1,35 @@
+.connection-panel {
+  margin-bottom: 20px;
+}
+.connection-panel input {
+  width: min(100%, 420px);
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  margin-bottom: 14px;
+}
+.connection-panel .button-row {
+  align-items: center;
+}
+.connection-panel a {
+  font-size: 12px;
+}
+.connection-panel code {
+  overflow-wrap: anywhere;
+}
+.service-stale .metric strong {
+  opacity: 0.5;
+}
+#service-state {
+  margin-bottom: 12px;
+}
+.service-stale #service-state {
+  color: #ff9d96;
+}
+.connection-panel input:focus-visible {
+  outline: 3px solid #7caaff;
+  outline-offset: 2px;
+}

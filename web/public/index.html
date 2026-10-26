@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1019" />
+    <meta
+      name="description"
+      content="Kaira Quant: kuukausittaisen 10 % tavoitepainon synteettinen simulaatio. BTC ja ETH, kulut ja passiivinen vertailu."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Kaira Quant · Monthly Lab</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip" href="#workspace">Skip to simulation</a>
+    <aside class="sidebar">
+      <a class="brand" href="./"
+        ><span class="brand-mark">K</span
+        ><span>KAIRA<span class="brand-sub">QUANT LAB</span></span></a
+      >
+      <div class="nav-title">WORKSPACE</div>
+      <a class="nav-link" href="./market.html">◉ Market monitor · V16</a>
+      <a class="nav-link" href="./service.html"
+        ><span>↗</span> Python service · V15</a
+      >
+      <a class="nav-link" href="./execution.html"
+        ><span>⇄</span> Orders · V14</a
+      >
+      <a class="nav-link selected" href="#workspace"
+        ><span>◈</span> Monthly simulation</a
+      >
+      <a class="nav-link" href="#journal"><span>≡</span> Event ledger</a>
+      <a class="nav-link" href="#method"
+        ><span>↗</span> How it works</a
+      >
+      <div class="sidebar-note">
+        <span class="live-dot"></span> RUNS IN YOUR BROWSER
+        <p>Synthetic prices.<br /> Room to explore.</p>
+        <small>V13 / no broker connection</small>
+      </div>
+    </aside>
+    <main id="workspace">
+      <p class="muted"><a href="./market.html">Open market monitor · V16 →</a></p>
+      <p class="muted">
+        <a href="./service.html">Open Python execution service · V15 →</a>
+      </p>
+      <header class="topbar">
+        <span>KAIRA / MONTHLY LAB</span
+        ><span class="badge">SYNTHETIC SIMULATION</span>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">ONE RULE. A FULL YEAR.</p>
+          <h1>One month at a time.</h1>
+          <p class="lead">
+            What happens when crypto is rebalanced to a 10% weight each month? Explore the rule alongside a passive portfolio.
+          </p>
+        </div>
+        <div class="rule">
+          <strong>10<span>%</span></strong
+          ><span>monthly target weight</span>
+        </div>
+      </section>
+      <p class="muted">
+        <a href="./execution.html">Open order lab · V14 →</a>
+        Test partial fills and recovery from interruptions.
+      </p>
+      <div id="notice" role="status" aria-live="polite" hidden></div>
+      <section class="panel control-panel" aria-label="Simulation controls">
+        <div class="controls-head">
+          <div>
+            <label for="scenario">Test scenario</label
+            ><select id="scenario">
+              <option value="waves">Oscillating market</option>
+              <option value="trend">Rising market</option>
+              <option value="shock">Shock and recovery</option>
+            </select>
+            <p id="scenario-description" class="muted"></p>
+          </div>
+          <div class="clock">
+            <span class="eyebrow">SIMULATION CLOCK · UTC</span
+            ><strong id="clock"></strong
+            ><span id="next-decision" class="muted"></span>
+          </div>
+        </div>
+        <progress
+          id="progress"
+          max="2196"
+          value="0"
+          aria-label="Simulation progress"
+        ></progress>
+        <div class="controls-bottom">
+          <div class="button-row">
+            <button id="next" class="primary">
+              Next month <span aria-hidden="true">→</span></button
+            ><button id="finish">Run full year</button
+            ><button id="reset" class="quiet">Reset simulation</button>
+          </div>
+          <span id="storage-status" class="storage-status"></span>
+        </div>
+      </section>
+      <section class="view-toolbar" aria-label="Portfolio view">
+        <div class="segmented" role="group" aria-label="Asset">
+          <button id="asset-btc" aria-pressed="true">
+            BTC <span>Bitcoin</span></button
+          ><button id="asset-eth" aria-pressed="false">
+            ETH <span>Ethereum</span>
+          </button>
+        </div>
+        <div class="cost-control">
+          <label for="cost">Round-trip cost</label
+          ><select id="cost">
+            <option value="base">Base · 0.60%</option>
+            <option value="stress">Stress · 1.20%</option>
+          </select>
+        </div>
+      </section>
+      <section class="metric-grid" aria-label="Portfolio metrics">
+        <article class="metric">
+          <span>Portfolio value</span><strong id="equity"></strong
+          ><small id="equity-note"></small>
+        </article>
+        <article class="metric">
+          <span>Return</span><strong id="return"></strong
+          ><small id="return-note"></small>
+        </article>
+        <article class="metric">
+          <span>Crypto weight</span><strong id="weight"></strong
+          ><small>10% target after rebalancing</small>
+        </article>
+        <article class="metric">
+          <span>Maximum drawdown</span><strong id="drawdown"></strong
+          ><small>Includes valuations and events</small>
+        </article>
+      </section>
+      <section class="chart-layout">
+        <article class="panel chart-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">SAME CAPITAL, TWO RULES</p>
+              <h2>Portfolio performance</h2>
+            </div>
+            <div class="legend">
+              <span class="monthly-key">Monthly rule</span
+              ><span class="passive-key">Passive</span>
+            </div>
+          </div>
+          <svg
+            id="chart"
+            viewBox="0 0 800 300"
+            role="img"
+            aria-labelledby="chart-title chart-description"
+          >
+            <title id="chart-title">Simulated portfolio values</title>
+            <desc id="chart-description"></desc>
+          </svg>
+          <p class="chart-footnote">
+            Valued every 4 hours. Initial capital: $10,000 per separate portfolio. Dates follow a test clock and prices are synthetic.
+          </p>
+        </article>
+        <article class="panel comparison">
+          <p class="eyebrow">COMPARISON</p>
+          <h2>Rebalance vs. hold</h2>
+          <div class="comparison-row">
+            <span>Monthly rule</span><strong id="monthly-return"></strong>
+          </div>
+          <div class="comparison-row">
+            <span>Passive</span><strong id="passive-return"></strong>
+          </div>
+          <div class="difference">
+            <span>Return difference</span><strong id="difference"></strong
+            ><small>percentage points</small>
+          </div>
+          <p class="muted">
+            The passive portfolio makes the same initial purchase and holds that quantity. Both portfolios use the same cost level.
+          </p>
+        </article>
+      </section>
+      <section class="balance-grid" aria-label="Accounting">
+        <div><span>Cash</span><strong id="cash"></strong></div>
+        <div><span>Crypto quantity</span><strong id="quantity"></strong></div>
+        <div><span>Fees paid</span><strong id="fees"></strong></div>
+        <div>
+          <span>Terminal liquidation reserve</span><strong id="reserve"></strong>
+        </div>
+      </section>
+      <section class="panel journal" id="journal">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">EVERY DECISION RECORDED</p>
+            <h2>Event ledger <span id="event-count" class="count"></span></h2>
+          </div>
+          <div class="button-row">
+            <button id="export">Export JSON</button
+            ><button id="import">Import JSON</button
+            ><input
+              id="import-file"
+              type="file"
+              accept=".json,application/json"
+              hidden
+            />
+          </div>
+        </div>
+        <p class="muted">
+          Events for the selected monthly portfolio. JSON stores the scenario and clock for the full simulation; all balances and events are reconstructed from them.
+        </p>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Monthly portfolio events"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Time · UTC</th>
+                <th scope="col">Decision</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Change $</th>
+                <th scope="col">Fee $</th>
+                <th scope="col">Weight before → after</th>
+                <th scope="col">Cash $</th>
+              </tr>
+            </thead>
+            <tbody id="events"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="method" id="method">
+        <div>
+          <p class="eyebrow">WHAT THIS TESTS</p>
+          <h2>A simple rule. <br /> Transparent accounting.</h2>
+        </div>
+        <div>
+          <p>
+            The initial crypto purchase uses 10% of capital including fees. The weight then returns to 10% on the first day of each month at 00:00 UTC. Fees apply only to the amount traded.
+          </p>
+          <p>
+            BTC, ETH and both cost levels use separate simulated portfolios. At period end, return and drawdown include a liquidation fee reserve. This reserve is not a sale; portfolio value shows holdings before the reserve.
+          </p>
+          <p class="method-note">
+            This is a software test environment, not a historical performance study. V8 and V10 forward validation remain separate. The simulation uses no market data, API keys or trading orders.
+          </p>
+        </div>
+      </section>
+      <footer>
+        <span>KAIRA QUANT · V13</span
+        ><span>10% target weight / monthly / BTC & ETH</span>
+      </footer>
+    </main>
+    <noscript
+      >This simulation requires JavaScript. Enable it in your browser.</noscript
+    >
+  </body>
+</html>

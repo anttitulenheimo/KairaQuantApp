@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1019" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' http://127.0.0.1:* http://localhost:*; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Kaira Quant · Market Monitor</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./service.css" />
+    <link rel="stylesheet" href="./market.css" />
+    <script type="module" src="./market-app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip" href="#workspace">Skip to market monitor</a>
+    <aside class="sidebar">
+      <a class="brand" href="./"
+        ><span class="brand-mark">K</span
+        ><span>KAIRA<span class="brand-sub">QUANT LAB</span></span></a
+      >
+      <div class="nav-title">WORKSPACE</div>
+      <a class="nav-link selected" href="./market.html"
+        >◉ Market monitor · V16</a
+      >
+      <a class="nav-link" href="./service.html">⇄ Execution lab · V15</a>
+      <a class="nav-link" href="./">◈ Monthly simulation</a>
+      <a class="nav-link" href="./execution.html">◇ Browser broker lab</a>
+      <div class="sidebar-note">
+        <span class="live-dot"></span>SIMULATED FILLS ONLY
+        <p>Observe the feed.<br />Inspect every decision.</p>
+        <small>No broker order endpoint</small>
+      </div>
+    </aside>
+    <main id="workspace">
+      <header class="topbar">
+        <a href="./">← Monthly lab</a
+        ><span id="source-badge" class="badge">NOT CONNECTED</span>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">MARKET DATA → QUALITY CHECK → SHADOW LEDGER</p>
+          <h1>Data before decisions.</h1>
+          <p class="lead">
+            Monitor BTC and ETH with separate simulated portfolios. Every
+            decision requires fresh quotes and completed hourly bars.
+          </p>
+        </div>
+        <div class="rule"><strong>V16</strong><span>market monitor</span></div>
+      </section>
+      <div id="market-notice" role="status" aria-live="polite" hidden></div>
+      <section
+        class="panel control-panel connection-panel"
+        aria-label="Local service connection"
+      >
+        <p class="eyebrow">LOCAL PYTHON SERVICE</p>
+        <h2 id="connection-state">Not connected</h2>
+        <p class="muted" id="connection-help">
+          For offline mode, start
+          <code>python3 run_v16_service.py --source fixture</code> on this
+          computer, then connect below. Live acquisition is currently blocked by
+          the V8/V10 research restriction.
+        </p>
+        <label for="service-url">Local service address</label
+        ><input
+          id="service-url"
+          type="url"
+          value="http://127.0.0.1:8767"
+          spellcheck="false"
+        />
+        <div class="button-row">
+          <button id="connect" class="primary">Connect local service</button
+          ><a
+            id="local-link"
+            href="http://127.0.0.1:8767/market.html"
+            target="_blank"
+            rel="noopener"
+            >Open local interface ↗</a
+          ><button id="refresh" disabled>Refresh status</button
+          ><button id="retry" hidden>Retry the same command</button>
+        </div>
+        <p class="muted">
+          Confirm the connection in the local popup. Allow local network access
+          if your browser asks. If Pages cannot connect, use the local
+          interface. Localhost on a phone refers to the phone.
+        </p>
+      </section>
+      <section class="panel control-panel monitor-controls">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ONE RULE, FOUR SEPARATE ACCOUNTS</p>
+            <h2>Monthly 10% target</h2>
+          </div>
+          <span id="run-state" class="badge">IDLE</span>
+        </div>
+        <p class="muted">
+          BTC and ETH each have a $10,000 base-cost portfolio and a separate
+          stress-cost portfolio. Round-trip costs: 0.60% / 1.20%. Simulated buys
+          use the ask; sells use the bid.
+        </p>
+        <div id="policy-block" role="status" hidden></div>
+        <div class="button-row">
+          <button id="start" class="primary" disabled>New monitoring run</button
+          ><button id="resume" disabled>Resume monitoring</button
+          ><button id="pause" disabled>Pause monitoring</button
+          ><button id="export" disabled>Export visible state</button>
+        </div>
+        <p id="run-message" class="muted">No run loaded.</p>
+        <p class="muted">
+          A new run replaces the active portfolio view after confirmation.
+          Previous event records remain in the local database.
+        </p>
+      </section>
+      <section class="health-grid" aria-label="Data health and schedule">
+        <article class="panel">
+          <span class="eyebrow">DATA HEALTH</span>
+          <h2 id="health-state">Waiting for service</h2>
+          <p id="health-message" class="muted">No prices have been read.</p>
+        </article>
+        <article class="panel">
+          <span class="eyebrow">NEXT MONTHLY DECISION · UTC</span>
+          <h2 id="next-due">—</h2>
+          <p id="last-attempt" class="muted">
+            The first allocation waits for a valid data batch.
+          </p>
+        </article>
+      </section>
+      <section class="panel journal" aria-label="Latest market quotes">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ONE FIXED DATA SOURCE</p>
+            <h2>BTC / ETH quotes</h2>
+          </div>
+          <span id="data-source" class="muted">—</span>
+        </div>
+        <p id="data-time" class="muted">
+          Waiting for market data. No synthetic fallback is used for a live
+          connection.
+        </p>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Quote timestamps and prices"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Bid $</th>
+                <th>Ask $</th>
+                <th>Mid $</th>
+                <th>Spread bps</th>
+                <th>Quote time · UTC</th>
+                <th>Completed bars through · UTC</th>
+              </tr>
+            </thead>
+            <tbody id="quotes"></tbody>
+          </table>
+        </div>
+      </section>
+      <section
+        id="accounts"
+        class="shadow-accounts"
+        aria-label="Simulated portfolios"
+      ></section>
+      <section class="panel journal" id="decisions-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">
+              OBSERVATION TIME AND SCHEDULED TIME ARE SEPARATE
+            </p>
+            <h2>
+              Shadow decisions <span id="event-count" class="count">0</span>
+            </h2>
+          </div>
+        </div>
+        <p class="muted">
+          Latest 120 decisions for this run. Fills are simulated, not broker
+          confirmations. Missed monthly windows are recorded without catch-up
+          trades.
+        </p>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Simulated decision ledger"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Scheduled · UTC</th>
+                <th>Observed · UTC</th>
+                <th>Account</th>
+                <th>Status</th>
+                <th>Side</th>
+                <th>Quantity</th>
+                <th>Price $</th>
+                <th>Fee $</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="decisions"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="method">
+        <div>
+          <p class="eyebrow">TECHNICAL MONITORING</p>
+          <h2>
+            Fresh data.<br />
+            Simulated execution.
+          </h2>
+        </div>
+        <div>
+          <p>
+            Both assets must have quotes no older than 60 seconds, an uncrossed
+            spread of at most 2%, and two contiguous completed hourly bars.
+            Hourly bars have a 60-second finalization delay. Missing data,
+            regressing timestamps or revised observed bars block decisions.
+          </p>
+          <p>
+            The initial allocation uses the first valid batch. Later decisions
+            occur at the UTC month boundary, with a maximum five-minute
+            execution window. A restart never fills an old monthly order using a
+            current price. Pausing stops data requests and simulated execution.
+          </p>
+          <p>
+            Quotes are polled at most once per 30 seconds, with backoff after
+            failures. Balances, market evidence and simulated fills commit
+            atomically. The service runs on your computer and requires its
+            Python process to stay open.
+          </p>
+          <p class="method-note">
+            This is technical shadow monitoring, not an independent
+            profitability study. There is no broker order API, liquidity
+            guarantee or slippage model. V8/V10 evaluations, frozen rules and
+            data budgets remain separate. Offline fixture mode is always labeled
+            explicitly.
+          </p>
+        </div>
+      </section>
+      <footer>
+        <span>KAIRA QUANT · V16</span
+        ><span>Market data / simulated fills / UTC</span>
+      </footer>
+    </main>
+    <noscript>This interface requires JavaScript.</noscript>
+  </body>
+</html>

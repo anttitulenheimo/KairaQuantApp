@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1019" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Kaira Quant · Order Lab</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./execution.css" />
+    <script type="module" src="./execution-app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip" href="#workspace">Skip to execution</a>
+    <aside class="sidebar">
+      <a class="brand" href="./"
+        ><span class="brand-mark">K</span
+        ><span>KAIRA<span class="brand-sub">QUANT LAB</span></span></a
+      >
+      <div class="nav-title">WORKSPACE</div>
+      <a class="nav-link" href="./market.html">◉ Market monitor · V16</a>
+      <a class="nav-link" href="./service.html"
+        ><span>↗</span> Python service · V15</a
+      >
+      <a class="nav-link" href="./"><span>◈</span> Monthly simulation</a>
+      <a class="nav-link selected" href="./execution.html"
+        ><span>⇄</span> Orders</a
+      >
+      <a class="nav-link" href="#fills-section"><span>≡</span> Fill ledger</a>
+      <div class="sidebar-note">
+        <span class="live-dot"></span> SIMULATED BROKER
+        <p>From decision<br /> to fill.</p>
+        <small>V14 / no real orders</small>
+      </div>
+    </aside>
+    <main id="workspace">
+      <p class="muted">
+        <a href="./service.html">Open Python execution service · V15 →</a>
+      </p>
+      <header class="topbar">
+        <a href="./">← Monthly simulation</a
+        ><span class="badge">SYNTHETIC EXECUTION TEST</span>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">DECISION → ORDER → FILL</p>
+          <h1>Every step, accounted for.</h1>
+          <p class="lead">
+            Follow monthly orders through submission and partial fills. Test a lost acknowledgement and recover from the same point.
+          </p>
+        </div>
+        <div class="rule">
+          <strong>V14</strong><span>execution lab</span>
+        </div>
+      </section>
+      <div id="exec-notice" role="status" aria-live="polite" hidden></div>
+      <section class="panel control-panel">
+        <div class="execution-config">
+          <div>
+            <label for="exec-asset">Separate portfolio</label
+            ><select id="exec-asset">
+              <option>BTC</option>
+              <option>ETH</option>
+            </select>
+          </div>
+          <div>
+            <label for="exec-cost">Round-trip cost</label
+            ><select id="exec-cost">
+              <option value="base">Base · 0.60%</option>
+              <option value="stress">Stress · 1.20%</option>
+            </select>
+          </div>
+          <div>
+            <label for="exec-scenario">Synthetic price path</label
+            ><select id="exec-scenario">
+              <option value="waves">Oscillating market</option>
+              <option value="trend">Rising market</option>
+              <option value="shock">Shock and recovery</option>
+            </select>
+          </div>
+          <div>
+            <label for="exec-profile">Broker test behavior</label
+            ><select id="exec-profile">
+              <option value="normal">Standard fills</option>
+              <option value="partial">Partial fills</option>
+              <option value="faults">Interruptions and failures</option>
+            </select>
+          </div>
+        </div>
+        <p class="muted">
+          A new run uses the selected settings and replaces the previous run in this view. Your V13 simulation is preserved.
+        </p>
+        <div class="button-row">
+          <button id="exec-start">New run</button
+          ><button id="exec-step" class="primary" disabled>
+            Next step →</button
+          ><button id="exec-year" disabled>Run test year</button
+          ><button id="exec-stop" hidden>Pause run</button>
+        </div>
+        <p id="exec-save" class="muted">
+          Choose settings and start a new run.
+        </p>
+      </section>
+      <section
+        class="execution-progress panel"
+        aria-label="Order stage"
+      >
+        <div>
+          <p class="eyebrow">EXECUTION TEST CLOCK</p>
+          <h2 id="exec-time">No decisions yet</h2>
+        </div>
+        <div id="exec-stage" class="badge">READY TO START</div>
+        <p id="exec-reason" class="muted">
+          The decision is saved before submission to the broker.
+        </p>
+      </section>
+      <section class="metric-grid" aria-label="Portfolio from confirmed fills">
+        <article class="metric">
+          <span>Portfolio value</span><strong id="exec-equity">$10,000.00</strong
+          ><small>Confirmed fills and cash</small>
+        </article>
+        <article class="metric">
+          <span>Cash</span><strong id="exec-cash">$10,000.00</strong
+          ><small id="exec-reserved">No open order</small>
+        </article>
+        <article class="metric">
+          <span>Crypto quantity</span><strong id="exec-quantity">0</strong
+          ><small id="exec-weight">Weight 0%</small>
+        </article>
+        <article class="metric">
+          <span>Fees paid</span><strong id="exec-fees">$0.00</strong
+          ><small id="exec-reserve">Reserve calculated at period end</small>
+        </article>
+      </section>
+      <section class="panel journal execution-journal" id="orders-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">INTENT AND EXECUTION, SEPARATELY</p>
+            <h2>
+              Decisions and orders
+              <span id="exec-count" class="count">0 / 13</span>
+            </h2>
+          </div>
+          <button id="exec-export" disabled>Export ledger JSON</button>
+        </div>
+        <p class="muted">
+          Quantity is rounded down to 8 decimal places. The simulated broker has a $1 minimum order. An open order blocks the next monthly decision.
+        </p>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Decision and order ledger"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Time · UTC</th>
+                <th>Decision</th>
+                <th>Reason</th>
+                <th>Planned quantity</th>
+                <th>Filled quantity</th>
+                <th>Status</th>
+                <th>ID</th>
+              </tr>
+            </thead>
+            <tbody id="exec-orders"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel journal execution-journal" id="fills-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ONLY CONFIRMED FILLS CHANGE BALANCES</p>
+            <h2>
+              Confirmed fills
+              <span id="exec-fill-count" class="count">0</span>
+            </h2>
+          </div>
+        </div>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Confirmed fills"
+        >
+          <table>
+            <thead>
+              <tr>
+                <th>Time · UTC</th>
+                <th>Side</th>
+                <th>Quantity</th>
+                <th>Price $</th>
+                <th>Fee $</th>
+                <th>Fill ID</th>
+              </tr>
+            </thead>
+            <tbody id="exec-fills"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="method">
+        <div>
+          <p class="eyebrow">BUILT TO TEST INTERRUPTIONS</p>
+          <h2>Resume the same <br /> order.</h2>
+        </div>
+        <div>
+          <p>
+            Standard orders fill completely at the decision price. Partial orders fill half first, then the remainder at the next synthetic hourly open. A price change can cause rejection if cash is insufficient.
+          </p>
+          <p>
+            The failure test cycles through five cases: a lost acceptance acknowledgement, partial fill, rejection, delayed response and canceled remainder. A lost acknowledgement deliberately pauses the run. Use Next step or reload and continue with the same order ID.
+          </p>
+          <p>
+            A rejected or canceled remainder is not resubmitted in the same month. Reopening the browser does not place a trade. The execution journal and simulated broker state are stored separately; inconsistent storage blocks further execution.
+          </p>
+          <p class="method-note">
+            Prices and the broker are simulated. This tests software behavior, not strategy profitability or real broker execution quality. V8/V10 validation and the legacy paper application remain separate. This page sends no requests to a broker.
+          </p>
+        </div>
+      </section>
+      <footer>
+        <span>KAIRA QUANT · V14</span
+        ><span>Monthly rule / simulated broker</span>
+      </footer>
+    </main>
+    <noscript>This execution interface requires JavaScript.</noscript>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+#connection-state {
+  margin: 8px 0 12px;
+}
+#market-notice,
+#policy-block {
+  border: 1px solid #675633;
+  background: #2c251a;
+  color: #f0d399;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+.health-grid,
+.shadow-accounts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 20px 0;
+}
+.health-grid > article,
+.shadow-accounts > article {
+  padding: 22px;
+}
+.health-grid h2 {
+  margin-top: 10px;
+}
+.shadow-accounts dl {
+  margin-bottom: 0;
+}
+.shadow-accounts dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 9px 0;
+}
+.shadow-accounts dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+.shadow-accounts dt {
+  color: var(--muted);
+}
+.market-stale #accounts dd,
+.market-stale #quotes {
+  opacity: 0.6;
+}
+#decisions td:last-child {
+  white-space: normal;
+  min-width: 180px;
+  text-align: left;
+}
+#health-state {
+  overflow-wrap: anywhere;
+}
+#data-time {
+  overflow-wrap: anywhere;
+}
+.fixture-mode #source-badge {
+  background: #2c251a;
+  color: #f0d399;
+  border-color: #675633;
+}
+@media (max-width: 640px) {
+  .health-grid,
+  .shadow-accounts {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .health-grid > article,
+  .shadow-accounts > article {
+    padding: 18px;
+  }
+  .monitor-controls .section-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}

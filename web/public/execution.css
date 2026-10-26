@@ -1,0 +1,84 @@
+.execution-config {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.execution-config select {
+  width: 100%;
+  font-size: 12px;
+  padding: 11px 8px;
+}
+.execution-progress {
+  margin: 24px 0 18px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.execution-progress p:last-child {
+  flex-basis: 100%;
+  margin: 0;
+}
+.execution-journal {
+  margin-top: 24px;
+}
+#exec-notice {
+  border: 1px solid #675633;
+  background: #2c251a;
+  color: #f0d399;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.execution-journal td:nth-child(3) {
+  white-space: normal;
+  min-width: 160px;
+}
+.execution-journal td:last-child {
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+}
+.execution-journal .empty {
+  text-align: left;
+  color: var(--muted);
+  padding: 24px 10px;
+}
+.status-partial {
+  color: #f0c98a;
+}
+.status-filled {
+  color: #54d6b0;
+}
+.status-rejected,
+.status-canceled {
+  color: #ff9d96;
+}
+@media (max-width: 1100px) {
+  .execution-config {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .execution-config {
+    grid-template-columns: 1fr;
+  }
+  .execution-progress {
+    padding: 18px;
+  }
+  .execution-progress h2 {
+    font-size: 17px;
+  }
+}
+#exec-quantity {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.skip:not(:focus) {
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+}
