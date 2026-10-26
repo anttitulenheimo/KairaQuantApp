@@ -55,3 +55,9 @@ history. This export cannot execute the registered research studies.
 Before making new commits, configure your GitHub-provided noreply email for both
 author and committer metadata. Do not copy the source repository's `.git`, logs,
 databases, credentials or research directories into this repository.
+
+Application updates are published automatically after the private source's
+tests pass. This repository receives independent application snapshot commits;
+private commit history and research-only changes are not published. Develop
+changes in the private source. Direct public edits can block synchronization
+until they have been reconciled there.

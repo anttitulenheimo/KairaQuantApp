@@ -133,6 +133,7 @@ test("missing broker data blocks continuation without erasing the journal", asyn
 }) => {
   await start(page);
   await page.locator("#exec-step").click();
+  await expect(page.locator("#exec-stage")).toHaveText("Decision saved");
   const original = await page.evaluate((k) => localStorage.getItem(k), journal);
   await page.evaluate((k) => localStorage.removeItem(k), broker);
   await page.reload();
